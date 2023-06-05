@@ -3,7 +3,7 @@
 # Author: [Cpt. Chaz]
 # Created: [04/23/23]
 # Description: This is intended to be a startup script for Sonarr v3+. Currently the script installs python3, pip, and the "requests" module. 
-# Place script in the /custom-cont-init.d folder for execution at startup, and modify to fit individual need
+# Place script in the /custom-cont-init.d folder for execution at startup, and modify to fit individual need (designed using lsio docker container)
 # Status: Tested
 #
 # Credits:

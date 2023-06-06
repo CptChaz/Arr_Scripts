@@ -43,20 +43,17 @@ if environ.get('sonarr_eventtype') == 'Test':
 sonarr_episodefile_episodeids = str(environ.get('sonarr_episodefile_episodeids'))
 
 # New if statement to check video cutoff
-if cutoff == '1080p':
-    # Add code to check if the episode meets the cutoff criteria
-    episode_quality_str = environ.get('sonarr_episodefile_quality')
-    episode_quality_match = re.search(r'(\d+)', episode_quality_str)
-    if episode_quality_match:
-        episode_quality = int(episode_quality_match.group(1))
-        cutoff_quality = int(cutoff[:-1])  # Convert cutoff to numeric format
-        if episode_quality < cutoff_quality:
-            print('Episode not unmonitored. Quality does not meet the cutoff.')
-            exit(0)
-        else:
-            # Continue with the rest of the script
-            sonarr_episodefile_episodeids = str(environ.get('sonarr_episodefile_episodeids'))
-            requests.put('http://' + sonarr_ip + ':' + sonarr_port + '/api/v3/episode/monitor?apikey=' + sonarr_api_token, json={'episodeids': [sonarr_episodefile_episodeids], 'monitored': False})
+episode_quality_str = environ.get('sonarr_episodefile_quality')
+episode_quality_match = re.search(r'(\d+)', episode_quality_str)
+if episode_quality_match:
+    episode_quality = int(episode_quality_match.group(1))
+    cutoff_quality = int(cutoff[:-1])  # Convert cutoff to numeric format
+    if episode_quality >= cutoff_quality:
+        # Continue with the rest of the script
+        requests.put('http://' + sonarr_ip + ':' + sonarr_port + '/api/v3/episode/monitor?apikey=' + sonarr_api_token, json={'episodeids': [sonarr_episodefile_episodeids], 'monitored': False})
     else:
-        print('Error: Failed to extract numeric quality from', episode_quality_str)
-        exit(1)
+        print('Episode not unmonitored. Quality does not meet the cutoff.')
+        exit(0)
+else:
+    print('Error: Failed to extract numeric quality from', episode_quality_str)
+    exit(1)

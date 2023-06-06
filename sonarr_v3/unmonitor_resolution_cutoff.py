@@ -12,7 +12,7 @@
 # Status: Tested
 #
 # Credits:
-# - This script was created with the help of ChatGPT, an OpenAI language model.
+# - This script was modified with the help of ChatGPT, an OpenAI language model.
 # - This script is a build on to Casvt's original unmonitor_downloaded_episodes.py script https://github.com/Casvt/Plex-scripts/blob/main/sonarr/unmonitor_downloaded_episodes.py
 
 """
@@ -30,26 +30,33 @@ sonarr_api_token = 'yourapihere'
 video_resolution_cutoff = '1080p' #<-- change to your preference (note: required)
 
 import requests
+import re
 from os import environ
 
 if environ.get('sonarr_eventtype') == 'Test':
-    if sonarr_ip and sonarr_port and sonarr_api_token:
+    if sonarr_ip and sonarr_port and sonarr_api_token and cutoff:
         exit(0)
     else:
         print('Error: Not all variables are set')
         exit(1)
 
-episode_ids = str(environ.get('sonarr_episodefile_episodeids'))
-episode_info_response = requests.get(
-    'http://' + sonarr_ip + ':' + sonarr_port + '/api/v3/episode?apikey=' + sonarr_api_token + '&id=' + episode_ids
-)
-if episode_info_response.status_code == 200:
-    episode_info = episode_info_response.json()
-    for episode in episode_info:
-        if 'quality' in episode and episode['quality']['quality']['resolution'] >= video_resolution_cutoff:
-            requests.put(
-                'http://' + sonarr_ip + ':' + sonarr_port + '/api/v3/episode/monitor?apikey=' + sonarr_api_token,
-                json={'episodeids': [episode['id']], 'monitored': False}
-            )
-else:
-    print('Error: Failed to retrieve episode information')
+sonarr_episodefile_episodeids = str(environ.get('sonarr_episodefile_episodeids'))
+
+# New if statement to check video cutoff
+if cutoff == '1080p':
+    # Add code to check if the episode meets the cutoff criteria
+    episode_quality_str = environ.get('sonarr_episodefile_quality')
+    episode_quality_match = re.search(r'(\d+)', episode_quality_str)
+    if episode_quality_match:
+        episode_quality = int(episode_quality_match.group(1))
+        cutoff_quality = int(cutoff[:-1])  # Convert cutoff to numeric format
+        if episode_quality < cutoff_quality:
+            print('Episode not unmonitored. Quality does not meet the cutoff.')
+            exit(0)
+        else:
+            # Continue with the rest of the script
+            sonarr_episodefile_episodeids = str(environ.get('sonarr_episodefile_episodeids'))
+            requests.put('http://' + sonarr_ip + ':' + sonarr_port + '/api/v3/episode/monitor?apikey=' + sonarr_api_token, json={'episodeids': [sonarr_episodefile_episodeids], 'monitored': False})
+    else:
+        print('Error: Failed to extract numeric quality from', episode_quality_str)
+        exit(1)

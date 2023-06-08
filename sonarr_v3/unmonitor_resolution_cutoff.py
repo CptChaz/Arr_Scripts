@@ -9,7 +9,7 @@
 # 1080p file, it WILL be unmonitored. Video resolution can be set to any preference. Be sure to set the variables
 # in the script to your specific sonarr instance (ip, port, api, and resolution).
 # This is the Python3 version v0.1
-# Status: Tested
+# Status: UnTested
 #
 # Credits:
 # - This script was modified with the help of ChatGPT, an OpenAI language model.

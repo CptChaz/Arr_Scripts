@@ -4,7 +4,7 @@
 # Created: [02/04/23]
 # Revised: [01/10/25]
 # Description: This script deletes and keeps only a certain number of user-set episodes (files), for multiple tv show directories. This script permanently removes files from the filesystem, so use with caution.
-# Usage: Set the root directory, number of files to keep, and show names in the “User Configuration” section, then manually run the script, or set up a cron schedule.
+# Usage: Set the root directory, number of files to keep, and show names in the “User Configuration” section, then manually run the script, or set up a cron schedule. USUALLY RUN DAILY
 # 	How It Works:
 # 		1. Loops through each show’s directory.
 # 		2. Sorts all files by modification date (newest first).
